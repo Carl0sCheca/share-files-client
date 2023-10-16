@@ -19,6 +19,9 @@
       },
       "notification": {
         "all": true
+      },
+      "window": {
+        "setFocus": true
       }
     },
     "systemTray": {
