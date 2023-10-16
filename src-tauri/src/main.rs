@@ -3,6 +3,7 @@
 
 use read_progress_stream::ReadProgressStream;
 use std::{
+    ffi::OsStr,
     io::Write,
     path::Path,
     process::{Command, Stdio},
@@ -114,7 +115,12 @@ async fn upload_file(app: tauri::AppHandle, token: String, server_url: String) -
 
             let file_path = file_paths[0].clone();
             let path = Path::new(&file_path);
-            let format = path.extension().unwrap().to_str().unwrap().to_string();
+            let format = path
+                .extension()
+                .unwrap_or(&OsStr::new(""))
+                .to_str()
+                .unwrap()
+                .to_string();
             let data = std::fs::read(path).expect("Cannot read the file");
             SendType::File { data, format }
         }
