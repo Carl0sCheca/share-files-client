@@ -88,11 +88,11 @@ async fn upload_file(app: tauri::AppHandle, token: String, server_url: String) -
 
     let pasted_type = match mime_types
         .iter()
-        .find(|x| x.starts_with("image/") || x.starts_with("text/"))
+        .find(|x| x.contains("image/") || x.contains("text/"))
     {
-        Some(x) if x.starts_with("image/") => PasteType::Screenshot,
-        Some(x) if x.starts_with("text/uri-list") => PasteType::File,
-        Some(x) if x.starts_with("text/plain") => PasteType::Text,
+        Some(x) if x.contains("image/") => PasteType::Screenshot,
+        Some(x) if x.contains("text/uri-list") => PasteType::File,
+        Some(x) if x.contains("text/plain") => PasteType::Text,
         _ => PasteType::Text,
     };
 
