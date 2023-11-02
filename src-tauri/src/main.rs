@@ -80,19 +80,13 @@ async fn upload_file(app: tauri::AppHandle, token: String, server_url: String) -
         .output()
         .expect("Failed to execute command");
 
-    let mime_types = String::from_utf8_lossy(&mime_types.stdout)
-        .split('\n')
-        .filter(|t| !t.is_empty())
-        .map(|s| s.to_owned())
-        .collect::<Vec<String>>();
+    let mime_types = String::from_utf8_lossy(&mime_types.stdout);
 
-    let pasted_type = match mime_types
-        .iter()
-        .find(|x| x.contains("image/") || x.contains("text/"))
-    {
-        Some(x) if x.contains("image/") => PasteType::Screenshot,
-        Some(x) if x.contains("text/uri-list") => PasteType::File,
-        Some(x) if x.contains("text/plain") => PasteType::Text,
+    let pasted_type = match mime_types {
+        x if x.contains(&"image/".to_owned()) => PasteType::Screenshot,
+        x if x.contains(&"text/uri-list".to_owned()) || x.contains(&"file".to_owned()) => {
+            PasteType::File
+        }
         _ => PasteType::Text,
     };
 
