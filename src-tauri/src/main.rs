@@ -43,7 +43,7 @@ enum UploadResponse {
 impl SendType {
     fn get_type(&self) -> String {
         match self {
-            SendType::Text(_) => "txt".to_owned(),
+            SendType::Text(_) => ">txt".to_owned(),
             SendType::File { format, .. } => format.to_owned(),
         }
     }
@@ -109,18 +109,21 @@ async fn upload_file(app: tauri::AppHandle, token: String, server_url: String) -
 
             let file_path = file_paths[0].clone();
             let path = Path::new(&file_path);
-            let format = path
-                .extension()
+            let filename = path
+                .file_name()
                 .unwrap_or(&OsStr::new(""))
                 .to_str()
                 .unwrap()
                 .to_string();
             let data = std::fs::read(path).expect("Cannot read the file");
-            SendType::File { data, format }
+            SendType::File {
+                data,
+                format: filename,
+            }
         }
         PasteType::Screenshot => SendType::File {
             data: output.stdout,
-            format: "png".to_owned(),
+            format: ">sc".to_owned(),
         },
     };
 
@@ -175,7 +178,7 @@ async fn upload_file(app: tauri::AppHandle, token: String, server_url: String) -
 
     match client
         .post(format!("{server_url}/upload"))
-        .header("format", file.get_type())
+        .header("share-filename", file.get_type())
         .header("share-token", token)
         .body(body)
         .send()
